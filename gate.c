@@ -22,43 +22,6 @@ void freeGate(Gate* gate) {
 	free(gate);
 }
 
-minterm eval(Gate *gate, minterm *inputs) {
-	char *op = gate->operation;
-	int stackTop = -1;
-	minterm *stack = malloc(sizeof(minterm)*strlen(op));
-	while( *op != '\0' ) {
-		switch (*op) {
-		case '!': 
-			stack[stackTop] = ~stack[stackTop];
-			break;
-		case '&':
-		case '*':
-			stack[stackTop-1] = stack[stackTop] & stack[stackTop-1];
-			stackTop--;
-			break;
-		case '|':
-		case '+':
-			stack[stackTop-1] = stack[stackTop] | stack[stackTop-1];
-			stackTop--;
-			break;
-		case '^':
-			stack[stackTop-1] = stack[stackTop] ^ stack[stackTop-1];
-			stackTop--;
-			break;
-		default:
-			assert(*op - 'A' < gate->n_inputs); 
-			int val = inputs[*op - 'A'];
-			stack[++stackTop] = val;
-			break;
-		}
-		op++;
-	}
-	assert(stackTop == 0); //error parsing expression
-	int ret = stack[stackTop];
-	free(stack);
-	return ret;
-}
-
 //gate file format:
 //#comments
 //n_inputs
@@ -95,12 +58,14 @@ Gate *parseGate(char *path) {
 			Gate *g = mkGate(name, n_inputs, line, n_gates);
 			free(name);
 			free(line);
+			fclose(fp);
 			return g;
 		}
 	}
 	printf("Invalid format in %s\n",path);
 	free(line);
 	free(name);
+	fclose(fp);
 	return NULL;
 }
 			

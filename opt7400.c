@@ -1,5 +1,5 @@
-//usage: opt7400 [options]  <number of inputs> minterms gatefiles gatefiles gatefiles
-//minterms should be expressed as a list of integers, comma seperated (no spaces):
+//usage: opt7400 [options]  <number of inputs> Minterms gatefiles gatefiles gatefiles
+//Minterms should be expressed as a list of integers, comma seperated (no spaces):
 //to run with gate files: and2.gate, or2.gate, and inv.gate for f(a,c,b,d)=m(1,3,5,11)
 //you would run
 // opt7400 4 1,3,5,11,12 and2.gate or2.gate, inv.gate
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 		exit( EXIT_FAILURE );
 	}
 
-	minterm goal = 0;
+	Minterm goal = 0;
 
 	char *tmp = strtok(argv[2], ",");
 	while(tmp != NULL) {
@@ -48,12 +48,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	globfree(&globbuf);
-
-
 	gates = realloc(gates, sizeof(Gate *) * num_gates);
-	minterm args[2] = {goal, goal};
-	minterm res = eval(gates[2], args);
-	printf("%llu\n",res);
 
 
 	//cleanup
