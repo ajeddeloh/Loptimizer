@@ -1,0 +1,8 @@
+#name
+XOR2
+#inputs
+2
+#number per IC
+4
+#operation (A being inp1, B being 2, etc)
+B!A*A!B*+
