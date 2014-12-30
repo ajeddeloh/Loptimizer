@@ -1,15 +1,17 @@
-CC = gcc
+CC = clang
 CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 
+
+objects = gate.o expression.o minterm.o
 
 all : optimizer
 
-optimizer : gate.o expression.o
-	$(CC) $(CFLAGS) -o optimizer opt7400.c gate.o expression.o
+optimizer : $(objects)
+	$(CC) $(CFLAGS) -o optimizer opt7400.c $(objects)
 
-%.o : %.c
-	$(CC) $(CFLAGS) -c $<
+minterm.o : minterm.h
+gate.o : minterm.h gate.h
+expression.o : gate.h minterm.h expression.h
 
-
+.PHONY : clean
 clean:
-	rm *.o
-	rm optimizer
+	rm optimizer $(objects)

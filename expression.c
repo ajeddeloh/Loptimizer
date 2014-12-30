@@ -4,8 +4,9 @@
 
 #include "expression.h"
 #include "gate.h"
+#include "minterm.h"
 
-Expression *mkExpression(Gate *gate, Expression **children) {
+Expression *mkExpression(Gate *gate, Expression **children, Minterm goal) {
 	Expression *e = malloc(sizeof(Expression));
 	e->gate = gate;
 	e->children = children;
@@ -44,6 +45,14 @@ Expression *mkExpression(Gate *gate, Expression **children) {
 	assert(stackTop == 0); //error parsing expression
 	e->value = stack[stackTop];
 	free(stack);
+
+	e->cost = 0;
+	for(int i = 0; i < gate->n_inputs; i++) {
+		e->cost += children[i]->cost;
+	}
+	e->cost++;
+	
+	e->hamm_dist = get_hamming_dist(e->value, goal);	
 
 	return e;
 }

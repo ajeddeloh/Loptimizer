@@ -1,8 +1,7 @@
 #ifndef GATE_H
 #define GATE_H
 
-typedef unsigned long long Minterm ;
-
+#include "minterm.h"
 
 typedef struct Gate {
 	char *name;
