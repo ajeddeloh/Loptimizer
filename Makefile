@@ -6,11 +6,9 @@ all : optimizer
 optimizer : gate.o expression.o
 	$(CC) $(CFLAGS) -o optimizer opt7400.c gate.o expression.o
 
-expression.o :
-	$(CC) $(CFLAGS) -c expression.c
+%.o : %.c
+	$(CC) $(CFLAGS) -c $<
 
-gate.o :
-	$(CC) $(CFLAGS) -c gate.c
 
 clean:
 	rm *.o
