@@ -49,7 +49,8 @@ int main(int argc, char *argv[]) {
 	}
 	globfree(&globbuf);
 	gates = realloc(gates, sizeof(Gate *) * num_gates);
-
+	
+	
 
 	//cleanup
 	for(int i = 0; i < num_gates; i++) {

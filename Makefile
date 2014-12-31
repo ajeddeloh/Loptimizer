@@ -11,6 +11,7 @@ optimizer : $(objects)
 minterm.o : minterm.h
 gate.o : minterm.h gate.h
 expression.o : gate.h minterm.h expression.h
+heap.o : heap.h
 
 .PHONY : clean
 clean:
