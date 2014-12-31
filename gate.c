@@ -7,7 +7,7 @@
 
 #include "gate.h"
 
-Gate *mkGate (const char* name, int n_inputs, const char *operation, int n_gates) {
+Gate *gate_new (const char* name, int n_inputs, const char *operation, int n_gates) {
 	Gate *gate = malloc( sizeof(Gate) );
 	gate->n_inputs = n_inputs;
 	gate->operation = strdup(operation);
@@ -16,7 +16,7 @@ Gate *mkGate (const char* name, int n_inputs, const char *operation, int n_gates
 	return gate;
 }
 
-void freeGate(Gate* gate) {
+void gate_free(Gate* gate) {
 	free(gate->operation);
 	free(gate->name);
 	free(gate);
@@ -28,7 +28,7 @@ void freeGate(Gate* gate) {
 //n_gates
 //operation string
 
-Gate *parseGate(char *path) {
+Gate *gate_parse(char *path) {
 	FILE *fp = fopen(path, "r");
 	if(fp == NULL) {
 		perror(path);
@@ -55,7 +55,7 @@ Gate *parseGate(char *path) {
 			if(n == 0) break;
 			n_gates = n;
 		} else {
-			Gate *g = mkGate(name, n_inputs, line, n_gates);
+			Gate *g = gate_new(name, n_inputs, line, n_gates);
 			free(name);
 			free(line);
 			fclose(fp);

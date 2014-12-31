@@ -11,6 +11,8 @@ typedef struct Expression {
 	int hamm_dist;
 } Expression;
 
-Expression *mkExpression(Gate *gate, Expression **children, Minterm goal);
+Expression *expr_new(Gate *gate, Expression **children, Minterm goal);
+
+int expr_get_est_cost(Expression *e);
 
 #endif

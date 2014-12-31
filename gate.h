@@ -10,11 +10,11 @@ typedef struct Gate {
 	char *operation; //in postfix
 } Gate;
 
-Gate *parseGate(char *path);
+Gate *gate_parse(char *path);
 
-Gate *mkGate(const char* name, int n_inputs, const char *operation, int n_gates);
+Gate *gate_new(const char* name, int n_inputs, const char *operation, int n_gates);
 
-void freeGate(Gate *gate);
+void gate_free(Gate *gate);
 
 
 #endif

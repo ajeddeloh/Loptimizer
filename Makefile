@@ -1,7 +1,7 @@
 CC = clang
-CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 
+CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 -Werror
 
-objects = gate.o expression.o minterm.o
+objects = gate.o expression.o minterm.o heap.o
 
 all : optimizer
 

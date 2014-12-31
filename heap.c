@@ -8,14 +8,14 @@
 #define get_lchild(self) (self*2+1)
 #define get_rchild(self) (self*2+2)
 
-Heap *heap_new(size_t init_size, int (*cmp)(void *a, void *b)) {
+Heap *heap_new(size_t init_size, int (*get_value)(void *a)) {
 	Heap *heap = malloc(sizeof(Heap));
 	assert(heap != NULL);
 	heap->data = malloc (sizeof(void *) * init_size);
 	assert(heap->data != NULL);
 	heap->size = init_size;
 	heap->n_elems = 0;
-	heap->cmp = cmp;
+	heap->get_value = get_value;
 	return heap;
 }
 
@@ -29,7 +29,7 @@ void heap_insert(Heap *heap, void *data) {
 	size_t idx = heap->n_elems-1;
 	void **array = heap->data;
 	
-	while(idx != 0 && (*(heap->cmp))(array[idx], array[get_parent(idx)]) < 0) {
+	while(idx != 0 && (*heap->get_value)(array[idx]) < (*heap->get_value)(array[get_parent(idx)])) {
 		void *tmp = array[idx];
 		array[idx] = array[get_parent(idx)];
 		array[get_parent(idx)] = tmp;
@@ -50,7 +50,7 @@ void *heap_remove_min(Heap *heap) {
 		void* l = array[get_lchild(idx)];
 		void* r = array[get_rchild(idx)];
 		if(p <= l && p <= r) break;
-		size_t smaller = (*heap->cmp)(r,l) < 0 ? get_rchild(idx) : get_lchild(idx);
+		size_t smaller = (*heap->get_value)(r) < (*heap->get_value)(l) ? get_rchild(idx) : get_lchild(idx);
 		if(smaller >= heap->n_elems) break;
 		void *tmp = array[idx];
 		array[idx] = array[smaller];

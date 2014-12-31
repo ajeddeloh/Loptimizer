@@ -10,7 +10,10 @@
 #include <string.h>
 #include <glob.h>
 
+#include "expression.h"
+#include "minterm.h"
 #include "gate.h"
+#include "heap.h"
 
 int main(int argc, char *argv[]) {
 	if(argc < 4) {
@@ -31,7 +34,7 @@ int main(int argc, char *argv[]) {
 		goal |= 1 << pos;
 		tmp = strtok(NULL, ",");
 	}
-	printf("%llu\n",goal);
+	minterm_print(goal);
 
 	glob_t globbuf;
 	for(int i = 3; i < argc; i++) {
@@ -41,7 +44,7 @@ int main(int argc, char *argv[]) {
 	Gate **gates = malloc(sizeof(Gate *) * globbuf.gl_pathc);
 	int num_gates = 0;
 	for(int i = 0; (unsigned int)i < globbuf.gl_pathc; i++) {
-		Gate *g = parseGate(globbuf.gl_pathv[i]);
+		Gate *g = gate_parse(globbuf.gl_pathv[i]);
 		if(g != NULL) {
 			printf("%d - %s %d: %s\n", num_gates, g->name, g->n_inputs, g->operation);
 			gates[num_gates++] = g;
@@ -50,11 +53,11 @@ int main(int argc, char *argv[]) {
 	globfree(&globbuf);
 	gates = realloc(gates, sizeof(Gate *) * num_gates);
 	
-	
-
+	Heap *queue = heap_new(10, (int (*)(void*)) expr_get_est_cost); 
+	(void)queue; //stfu compiler
 	//cleanup
 	for(int i = 0; i < num_gates; i++) {
-		freeGate(gates[i]);
+		gate_free(gates[i]);
 	}
 	free(gates);
 	return EXIT_SUCCESS;
