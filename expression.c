@@ -14,7 +14,7 @@ Expression *expr_new(Gate *gate, Expression **children, Minterm goal) {
 	//calculate this guys value
 	char *op = gate->operation;
 	int stack_top = -1;
-	Minterm *stack = malloc(sizeof(Minterm)*strlen(op));
+	Minterm stack[strlen(op)];
 	while( *op != '\0' ) {
 		switch (*op) {
 		case '!': 
@@ -22,15 +22,10 @@ Expression *expr_new(Gate *gate, Expression **children, Minterm goal) {
 			break;
 		case '&':
 		case '*':
-			stack[stack_top-1] = stack[stack_top] & stack[stack_top-1];
-			stack_top--;
-			break;
 		case '|':
 		case '+':
-			stack[stack_top-1] = stack[stack_top] | stack[stack_top-1];
-			stack_top--;
-			break;
 		case '^':
+			minterm_do_operation(stack_top-1,
 			stack[stack_top-1] = stack[stack_top] ^ stack[stack_top-1];
 			stack_top--;
 			break;
