@@ -54,6 +54,10 @@ Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
 	return e;
 }
 
+Expression *expr_new_from_input(int input_idx, minterm_chunk *goal) {
+	return NULL;
+}
+
 int expr_get_est_cost(Expression *e) {
 	return e->cost*10 + e->hamm_dist;
 }

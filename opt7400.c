@@ -57,6 +57,9 @@ int main(int argc, char *argv[]) {
 	
 	Heap *queue = heap_new(10, (int (*)(void*)) expr_get_est_cost); 
 	(void)queue; //stfu compiler
+	
+	Expression *a = expr_new_from_input(0,goal);
+
 	//cleanup
 	for(int i = 0; i < num_gates; i++) {
 		gate_free(gates[i]);
