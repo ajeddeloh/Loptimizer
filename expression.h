@@ -13,7 +13,9 @@ typedef struct Expression {
 
 Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal);
 
-Expression *expr_new_from_input(int input_idx, minterm_chunk *goal);
+Expression *expr_new_from_input(int input_idx, size_t n_inputs, minterm_chunk *goal);
+
+void expr_free(Expression *e);
 
 int expr_get_est_cost(Expression *e);
 

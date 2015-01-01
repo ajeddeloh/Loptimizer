@@ -58,9 +58,23 @@ int main(int argc, char *argv[]) {
 	Heap *queue = heap_new(10, (int (*)(void*)) expr_get_est_cost); 
 	(void)queue; //stfu compiler
 	
-	Expression *a = expr_new_from_input(0,goal);
-
+	Expression *a = expr_new_from_input(0,num_inputs,goal);
+	minterm_print(a->value);
+	Expression *b = expr_new_from_input(1,num_inputs,goal);
+	minterm_print(b->value);
+	Expression *c = expr_new_from_input(2,num_inputs,goal);
+	minterm_print(c->value);
+	Expression *d = expr_new_from_input(3,num_inputs,goal);
+	minterm_print(d->value);
+	Expression *children[2] = {a,b};
+	Expression *aANDb = expr_new(gates[2],children, goal);
+	minterm_print(aANDb->value); 
 	//cleanup
+	expr_free(a);
+	expr_free(b);
+	expr_free(c);
+	expr_free(d);
+	expr_free(aANDb);
 	for(int i = 0; i < num_gates; i++) {
 		gate_free(gates[i]);
 	}
