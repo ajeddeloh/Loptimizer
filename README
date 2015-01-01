@@ -1,0 +1,26 @@
+Purpose:
+
+This is an open source logic optimizer for 7400 series chips.
+Many algorithms (Espresso, Quine-McClusky, K-maps, etc) exist
+minimize digital logic for sum of products (SoP) or product 
+of sums (PoS) configurations but not for situations where:
+	- Gates don't exist with more than 4 inputs
+	- Other gates (like XOR) can be used to reduce the 
+	  number of gates used.
+	- Gates come in packs rather than individaully. While
+	  with manufacturing silicon each additional gate
+	  consumes resources, with 7400 series logic, once
+	  one gate is used, the rest that share the IC package
+	  are essentially "free"
+
+Project Layout and Algorithm:
+todo: type this
+
+Dependencies:
+-Mac(untested) or Linux
+-Shouldn't be too hard to get it to work on windows
+-Should work on 32 bit but this is also untested
+-No other dependencies
+
+Bugs: 
+-None known (other than things that aren't done)
