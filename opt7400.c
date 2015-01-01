@@ -25,13 +25,15 @@ int main(int argc, char *argv[]) {
 		printf("number of inputs invalid\n");
 		exit( EXIT_FAILURE );
 	}
-
-	Minterm goal = 0;
+	
+	minterm_init(num_inputs);
+	minterm_chunk *goal = minterm_new();
 
 	char *tmp = strtok(argv[2], ",");
 	while(tmp != NULL) {
 		int pos = atoi(tmp);
-		goal |= 1 << pos;
+		//goal |= 1 << pos;
+		minterm_set_bit(goal, pos);
 		tmp = strtok(NULL, ",");
 	}
 	minterm_print(goal);

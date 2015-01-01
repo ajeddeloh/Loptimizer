@@ -6,7 +6,7 @@
 #include "gate.h"
 #include "minterm.h"
 
-Expression *expr_new(Gate *gate, Expression **children, Minterm goal) {
+Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
 	Expression *e = malloc(sizeof(Expression));
 	e->gate = gate;
 	e->children = children;
@@ -14,25 +14,27 @@ Expression *expr_new(Gate *gate, Expression **children, Minterm goal) {
 	//calculate this guys value
 	char *op = gate->operation;
 	int stack_top = -1;
-	Minterm stack[strlen(op)];
+	minterm_chunk *stack[strlen(op)];
 	while( *op != '\0' ) {
 		switch (*op) {
 		case '!': 
-			stack[stack_top] = ~stack[stack_top];
+			minterm_do_operation(stack[stack_top], stack[stack_top], NULL, *op);
+//			stack[stack_top] = ~stack[stack_top];
 			break;
 		case '&':
 		case '*':
 		case '|':
 		case '+':
 		case '^':
-			minterm_do_operation(stack_top-1,
-			stack[stack_top-1] = stack[stack_top] ^ stack[stack_top-1];
+			minterm_do_operation(stack[stack_top-1],stack[stack_top], stack[stack_top-1], *op);
+//			stack[stack_top-1] = stack[stack_top] ^ stack[stack_top-1];
 			stack_top--;
 			break;
 		default:
 			assert(*op - 'A' < gate->n_inputs); 
-			int val = children[*op - 'A']->value;
-			stack[++stack_top] = val;
+			minterm_chunk *val = children[*op - 'A']->value;
+//			stack[++stack_top] = val;
+			minterm_cpy(stack[++stack_top], val);
 			break;
 		}
 		op++;
