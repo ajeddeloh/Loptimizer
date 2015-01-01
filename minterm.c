@@ -99,3 +99,7 @@ static minterm_chunk chunk_do_operation(minterm_chunk a, minterm_chunk b, char o
 void minterm_cpy(minterm_chunk *dst, minterm_chunk *src) {
 	memcpy(dst, src, n_chunks * sizeof(minterm_chunk));
 }
+
+void minterm_free(minterm_chunk *m) {
+	free(m);
+}

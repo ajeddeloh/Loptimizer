@@ -62,5 +62,7 @@ int main(int argc, char *argv[]) {
 		gate_free(gates[i]);
 	}
 	free(gates);
+	minterm_free(goal);
+	heap_free(queue);
 	return EXIT_SUCCESS;
 }

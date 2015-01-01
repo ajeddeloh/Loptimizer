@@ -19,4 +19,6 @@ void minterm_do_operation(minterm_chunk *res, minterm_chunk *a, minterm_chunk *b
 
 void minterm_cpy(minterm_chunk *dst, minterm_chunk *src); 
 
+void minterm_free(minterm_chunk *m);
+
 #endif 

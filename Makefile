@@ -5,7 +5,7 @@ objects = gate.o expression.o minterm.o heap.o
 
 all : optimizer
 
-optimizer : $(objects)
+optimizer : $(objects) opt7400.c
 	$(CC) $(CFLAGS) -o optimizer opt7400.c $(objects)
 
 minterm.o : minterm.h
