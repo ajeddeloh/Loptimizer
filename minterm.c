@@ -8,13 +8,13 @@ static size_t n_bits = -1;
 static size_t n_chunks = -1;
 
 static inline size_t get_chunk_idx(size_t bit_n);
-static minterm_chunk chunk_do_operation(minterm_chunk a, minterm_chunk b, char op);
-static void chunk_print(minterm_chunk a, size_t start_at);
+static uint64_t chunk_do_operation(uint64_t a, uint64_t b, char op);
+static void chunk_print(uint64_t a, size_t start_at);
 
-int get_hamming_dist(minterm_chunk *a, minterm_chunk *b) {
+int get_hamming_dist(uint64_t *a, uint64_t *b) {
 	(void)a;
 	(void)b;
-/*	minterm_chunk *diff = a^b;
+/*	uint64_t *diff = a^b;
 #if __GNUC__ >= 4 //todo, add clang to this or something, iirc clang can do it too
 	return __builtin_popcountll(diff);
 #else
@@ -29,10 +29,10 @@ int get_hamming_dist(minterm_chunk *a, minterm_chunk *b) {
 	return 0;
 }
 
-void minterm_print(minterm_chunk *m) {
-	if(n_bits < sizeof(minterm_chunk)*8) {
-		minterm_chunk shifted = *m << ((sizeof(minterm_chunk)*8)-n_bits);
-		chunk_print(shifted, (sizeof(minterm_chunk)*8)-n_bits);
+void minterm_print(uint64_t *m) {
+	if(n_bits < sizeof(uint64_t)*8) {
+		uint64_t shifted = *m << ((sizeof(uint64_t)*8)-n_bits);
+		chunk_print(shifted, (sizeof(uint64_t)*8)-n_bits);
 	}else {
 		for(size_t i = 0; i < n_chunks; i++) {
 			chunk_print(m[i],0);
@@ -41,9 +41,9 @@ void minterm_print(minterm_chunk *m) {
 	printf("\n");
 }
 
-static void chunk_print(minterm_chunk c, size_t start_at) {
-	minterm_chunk mask = 1llu << (8 * sizeof(minterm_chunk) - 1);
-	for(size_t i = start_at; i < 8*sizeof(minterm_chunk); i++) {
+static void chunk_print(uint64_t c, size_t start_at) {
+	uint64_t mask = 1llu << (8 * sizeof(uint64_t) - 1);
+	for(size_t i = start_at; i < 8*sizeof(uint64_t); i++) {
 		if( mask & c ) {
 			putc('1', stdout);
 		} else {
@@ -55,30 +55,30 @@ static void chunk_print(minterm_chunk c, size_t start_at) {
 
 void minterm_init(size_t n_inputs) {
 	n_bits = 1 << n_inputs;
-	n_chunks = 1 + (n_bits-1) / (sizeof(minterm_chunk)*8);
+	n_chunks = 1 + (n_bits-1) / (sizeof(uint64_t)*8);
 }
 
-minterm_chunk *minterm_new() {
-	minterm_chunk *m = malloc(sizeof(minterm_chunk) * n_chunks);
-	memset(m, 0, sizeof(minterm_chunk) *n_chunks);
+uint64_t *minterm_new() {
+	uint64_t *m = malloc(sizeof(uint64_t) * n_chunks);
+	memset(m, 0, sizeof(uint64_t) *n_chunks);
 	return m;
 }
 
 static inline size_t get_chunk_idx(size_t bit_n) {
-	return bit_n / (sizeof(minterm_chunk) * 8);
+	return bit_n / (sizeof(uint64_t) * 8);
 }
 
-void minterm_set_bit(minterm_chunk *m, size_t bit) {
-	m[get_chunk_idx(bit)] |= 1llu << (bit%(sizeof(minterm_chunk)*8));
+void minterm_set_bit(uint64_t *m, size_t bit) {
+	m[get_chunk_idx(bit)] |= 1llu << (bit%(sizeof(uint64_t)*8));
 }
 
-void minterm_do_operation(minterm_chunk *res, minterm_chunk *a, minterm_chunk *b, char op) {
+void minterm_do_operation(uint64_t *res, uint64_t *a, uint64_t *b, char op) {
 	for(size_t i = 0; i < n_chunks; i++) {
 		res[i] = chunk_do_operation(a[i], b[i], op);
 	}
 }
 		
-static minterm_chunk chunk_do_operation(minterm_chunk a, minterm_chunk b, char op) {
+static uint64_t chunk_do_operation(uint64_t a, uint64_t b, char op) {
 	switch (op) {
 	case '!':
 		return ~a;
@@ -96,10 +96,7 @@ static minterm_chunk chunk_do_operation(minterm_chunk a, minterm_chunk b, char o
 	}
 }
 
-void minterm_cpy(minterm_chunk *dst, minterm_chunk *src) {
-	memcpy(dst, src, n_chunks * sizeof(minterm_chunk));
+void minterm_cpy(uint64_t *dst, uint64_t *src) {
+	memcpy(dst, src, n_chunks * sizeof(uint64_t));
 }
 
-void minterm_free(minterm_chunk *m) {
-	free(m);
-}

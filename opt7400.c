@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	minterm_init(num_inputs);
-	minterm_chunk *goal = minterm_new();
+	uint64_t *goal = minterm_new();
 
 	char *tmp = strtok(argv[2], ",");
 	while(tmp != NULL) {
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 		gate_free(gates[i]);
 	}
 	free(gates);
-	minterm_free(goal);
+	free(goal);
 	heap_free(queue);
 	return EXIT_SUCCESS;
 }

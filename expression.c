@@ -6,7 +6,7 @@
 #include "gate.h"
 #include "minterm.h"
 
-Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
+Expression *expr_new(Gate *gate, Expression **children, uint64_t *goal) {
 	Expression *e = malloc(sizeof(Expression));
 	e->gate = gate;
 	e->children = children;
@@ -14,7 +14,7 @@ Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
 	//calculate this guys value
 	char *op = gate->operation;
 	int stack_top = -1;
-	minterm_chunk *stack[strlen(op)];
+	uint64_t *stack[strlen(op)];
 	while( *op != '\0' ) {
 		switch (*op) {
 		case '!': 
@@ -28,12 +28,12 @@ Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
 		case '^':
 			minterm_do_operation(stack[stack_top-1],stack[stack_top], stack[stack_top-1], *op);
 //			stack[stack_top-1] = stack[stack_top] ^ stack[stack_top-1];
-			minterm_free(stack[stack_top]);
+			free(stack[stack_top]);
 			stack_top--;
 			break;
 		default:
 			assert(*op - 'A' < gate->n_inputs); 
-			minterm_chunk *val = children[*op - 'A']->value;
+			uint64_t *val = children[*op - 'A']->value;
 			stack[++stack_top] = minterm_new();
 			minterm_cpy(stack[stack_top], val);
 			break;
@@ -54,7 +54,7 @@ Expression *expr_new(Gate *gate, Expression **children, minterm_chunk *goal) {
 	return e;
 }
 
-Expression *expr_new_from_input(int input_idx, size_t n_inputs, minterm_chunk *goal) {
+Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) {
 	Expression *e = malloc(sizeof(Expression));
 	e->gate = NULL;
 	e->children = NULL;
@@ -72,7 +72,7 @@ Expression *expr_new_from_input(int input_idx, size_t n_inputs, minterm_chunk *g
 }
 
 void expr_free(Expression *e) {
-	minterm_free(e->value);
+	free(e->value);
 	free(e);
 }
 
