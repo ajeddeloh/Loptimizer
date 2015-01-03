@@ -41,7 +41,7 @@ void minterm_print(const uint64_t *m) {
 		chunk_print(shifted, (sizeof(uint64_t)*8)-n_bits);
 	}else {
 		for(size_t i = 0; i < n_chunks; i++) {
-			chunk_print(m[i],0);
+			chunk_print(m[n_chunks-i-1],0);
 		}
 	}
 	printf("\n");
