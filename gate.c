@@ -4,8 +4,38 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h>
+#include <ctype.h>
 
 #include "gate.h"
+
+static bool validate_operation(const char *operation, size_t n_inputs);
+
+static bool validate_operation(const char *operation, size_t n_inputs) {
+	int stack_size = 0;
+	while(*operation != '\0') {
+		switch(*operation) {
+		case '!':
+			if(stack_size == 0) return false;
+			break;
+		case '+':
+		case '|':
+		case '&':
+		case '*':
+		case '^':
+			if(stack_size < 2) return false;
+			stack_size --;
+			break;
+		default:
+			if(!isupper(*operation)) return false;
+			if(*operation - 'A' >= (int)n_inputs) return false;
+			stack_size++;
+			break;
+		}
+		operation++;
+	}
+	return true;
+}
 
 Gate *gate_new (const char* name, int n_inputs, const char *operation, size_t n_gates) {
 	Gate *gate = malloc( sizeof(Gate) );
@@ -40,6 +70,7 @@ Gate *gate_parse(char *path) {
 	size_t n_gates = 0;
 	char *name = NULL;
 	char *operation = NULL;
+	bool error = false;
 	while( getline(&line, &n, fp) != -1) {
 		*strchr(line, '\n') = '\0'; //replace newline with null terminator
 		if( line[0] == '#' || strlen(line) == 0 ) {
@@ -49,23 +80,34 @@ Gate *gate_parse(char *path) {
 			name = strdup(line);
 		} else if(n_inputs == 0) {
 			int n = atol(line);
-			if(n == 0) break;
+			if(n == 0) {
+				error = true;
+				break;
+			}
 			n_inputs = n;
 		} else if(n_gates == 0) {
 			int n = atol(line);
-			if(n == 0) break;
+			if(n == 0) {
+				error = true;
+				break;
+			}
 			n_gates = n;
 		} else if (operation == NULL) {
-			printf("%s\n",line);
+			if(!validate_operation(line, n_inputs)) {
+				error = true;
+				break;
+			}
 			operation = strdup(line);
 		} else { //error
-			printf("Invalid format in %s\n",path);
-			free(line);
-			free(name);
-			free(operation);
-			fclose(fp);
-			return NULL;
 		}	
+	}
+	if(error) {
+		printf("Invalid format in %s\n",path);
+		free(line);
+		free(name);
+		free(operation);
+		fclose(fp);
+		return NULL;
 	}
 	Gate *g = gate_new(name, n_inputs, operation, n_gates);
 	free(name);

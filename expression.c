@@ -73,6 +73,7 @@ Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) 
 
 void expr_free(Expression *e) {
 	free(e->value);
+	free(e->children);
 	free(e);
 }
 
