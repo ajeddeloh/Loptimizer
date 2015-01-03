@@ -27,7 +27,7 @@ void gate_free(Gate* gate) {
 //n_inputs
 //n_gates
 //operation string
-
+//optional special properties (e.g. associative)
 Gate *gate_parse(char *path) {
 	FILE *fp = fopen(path, "r");
 	if(fp == NULL) {
@@ -39,6 +39,7 @@ Gate *gate_parse(char *path) {
 	size_t n_inputs = 0;
 	size_t n_gates = 0;
 	char *name = NULL;
+	char *operation = NULL;
 	while( getline(&line, &n, fp) != -1) {
 		*strchr(line, '\n') = '\0'; //replace newline with null terminator
 		if( line[0] == '#' || strlen(line) == 0 ) {
@@ -54,18 +55,23 @@ Gate *gate_parse(char *path) {
 			int n = atol(line);
 			if(n == 0) break;
 			n_gates = n;
-		} else {
-			Gate *g = gate_new(name, n_inputs, line, n_gates);
-			free(name);
+		} else if (operation == NULL) {
+			printf("%s\n",line);
+			operation = strdup(line);
+		} else { //error
+			printf("Invalid format in %s\n",path);
 			free(line);
+			free(name);
+			free(operation);
 			fclose(fp);
-			return g;
-		}
+			return NULL;
+		}	
 	}
-	printf("Invalid format in %s\n",path);
-	free(line);
+	Gate *g = gate_new(name, n_inputs, operation, n_gates);
 	free(name);
+	free(line);
+	free(operation);
 	fclose(fp);
-	return NULL;
+	return g;
 }
 			
