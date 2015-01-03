@@ -7,11 +7,10 @@
 #include "gate.h"
 #include "minterm.h"
 
-Expression *expr_new_from_expr(const Gate *gate, Expression **children, const uint64_t *goal) {
+Expression *expr_new_from_expr(const Gate *gate, const uint64_t *goal, Expression **children) {
 	Expression *e = malloc(sizeof(Expression));
 	e->gate = gate;
-	e->children = malloc(gate->n_inputs * sizeof(Expression *));
-	memcpy(e->children,children,gate->n_inputs * sizeof(Expression *));
+	e->children = children;
 	
 	//calculate this guys value
 	char *op = gate->operation;
@@ -73,7 +72,6 @@ Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) 
 
 void expr_free(Expression *e) {
 	free(e->value);
-	free(e->children);
 	free(e);
 }
 

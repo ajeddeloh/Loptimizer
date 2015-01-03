@@ -13,7 +13,8 @@ typedef struct Expression {
 	int hamm_dist;
 } Expression;
 
-Expression *expr_new_from_expr(const Gate *gate, Expression **children, const uint64_t *goal);
+//children array is not copied. 
+Expression *expr_new_from_expr(const Gate *gate, const uint64_t *goal, Expression **children);
 
 Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal);
 
