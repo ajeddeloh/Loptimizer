@@ -11,22 +11,28 @@ static inline size_t get_chunk_idx(size_t bit_n);
 static uint64_t chunk_do_operation(uint64_t a, uint64_t b, char op);
 static void chunk_print(uint64_t a, size_t start_at);
 
+static uint64_t mask_lookup[] ={0x0000000000000000,
+				0x0000000000000003,
+				0x0000000000000007,
+				0x000000000000000F,
+				0x00000000000000FF,
+				0x000000000000FFFF,
+				0x00000000FFFFFFFF,
+				0xFFFFFFFFFFFFFFFF };
+
+static uint64_t eq_mask;
+
+//requires __builtin_popcountll be defined, should work on clang/gcc
 int get_hamming_dist(uint64_t *a, uint64_t *b) {
-	(void)a;
-	(void)b;
-/*	uint64_t *diff = a^b;
-#if __GNUC__ >= 4 //todo, add clang to this or something, iirc clang can do it too
-	return __builtin_popcountll(diff);
-#else
-#error
-	int cnt = 0;
-	for(size_t i = 0; i < 8*sizeof(Minterm); i++) {
-		cnt += 1ull & diff;
-		diff = diff >> 1;
-	}
-	return cnt;
-#endif*/
-	return 0;
+	if(n_chunks > 1) {
+		size_t count = 0;
+		for(size_t i = 0; i < n_chunks; i++) {
+			count += __builtin_popcountll(a[i]^b[i]);
+		}
+		return count;
+	} else {
+		return __builtin_popcountll(eq_mask & (*a^*b));
+	}	
 }
 
 void minterm_print(uint64_t *m) {
@@ -56,6 +62,9 @@ static void chunk_print(uint64_t c, size_t start_at) {
 void minterm_init(size_t n_inputs) {
 	n_bits = 1 << n_inputs;
 	n_chunks = 1 + (n_bits-1) / (sizeof(uint64_t)*8);
+	if(n_chunks == 1) {
+		eq_mask = mask_lookup[n_inputs];
+	}
 }
 
 uint64_t *minterm_new() {

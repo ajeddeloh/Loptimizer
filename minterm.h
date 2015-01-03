@@ -3,8 +3,13 @@
 
 #include <stdint.h>
 
-typedef uint64_t uint64_t;
-//typedef minterm_uint64_t* Minterm;
+/*
+ * Minterms are stored as an array of uint64_t's. The bit at position n
+ * indictates if n is a minterm. Its basically a truth table. Since all
+ * minterms are the same size, the size of the minterms is stored statically
+ * and need to be set with minterm_init before calling any of the other 
+ * minterm functions
+ */
 
 //todo make this faster
 int get_hamming_dist(uint64_t *a, uint64_t *b);

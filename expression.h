@@ -1,6 +1,8 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include <stdint.h>
+
 #include "gate.h"
 
 typedef struct Expression {

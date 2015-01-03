@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	for(int i = 0; (unsigned int)i < globbuf.gl_pathc; i++) {
 		Gate *g = gate_parse(globbuf.gl_pathv[i]);
 		if(g != NULL) {
-			printf("%d - %s %d: %s\n", num_gates, g->name, g->n_inputs, g->operation);
+			printf("%d - %s %zu: %s\n", num_gates, g->name, g->n_inputs, g->operation);
 			gates[num_gates++] = g;
 		}
 	}

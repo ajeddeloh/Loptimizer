@@ -7,7 +7,7 @@
 
 #include "gate.h"
 
-Gate *gate_new (const char* name, int n_inputs, const char *operation, int n_gates) {
+Gate *gate_new (const char* name, int n_inputs, const char *operation, size_t n_gates) {
 	Gate *gate = malloc( sizeof(Gate) );
 	gate->n_inputs = n_inputs;
 	gate->operation = strdup(operation);
@@ -36,8 +36,8 @@ Gate *gate_parse(char *path) {
 	}	
 	char *line = NULL;
 	size_t n = 0;
-	int n_inputs = -1;
-	int n_gates = -1;
+	size_t n_inputs = 0;
+	size_t n_gates = 0;
 	char *name = NULL;
 	while( getline(&line, &n, fp) != -1) {
 		*strchr(line, '\n') = '\0'; //replace newline with null terminator
@@ -46,11 +46,11 @@ Gate *gate_parse(char *path) {
 		}
 		if(name == NULL) {
 			name = strdup(line);
-		} else if(n_inputs == -1) {
+		} else if(n_inputs == 0) {
 			int n = atol(line);
 			if(n == 0) break;
 			n_inputs = n;
-		} else if(n_gates == -1) {
+		} else if(n_gates == 0) {
 			int n = atol(line);
 			if(n == 0) break;
 			n_gates = n;

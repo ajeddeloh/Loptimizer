@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "expression.h"
 #include "gate.h"
@@ -15,11 +16,11 @@ Expression *expr_new(Gate *gate, Expression **children, uint64_t *goal) {
 	char *op = gate->operation;
 	int stack_top = -1;
 	uint64_t *stack[strlen(op)];
+	uint64_t *val;
 	while( *op != '\0' ) {
 		switch (*op) {
 		case '!': 
 			minterm_do_operation(stack[stack_top], stack[stack_top], stack[stack_top], *op);
-//			stack[stack_top] = ~stack[stack_top];
 			break;
 		case '&':
 		case '*':
@@ -27,13 +28,11 @@ Expression *expr_new(Gate *gate, Expression **children, uint64_t *goal) {
 		case '+':
 		case '^':
 			minterm_do_operation(stack[stack_top-1],stack[stack_top], stack[stack_top-1], *op);
-//			stack[stack_top-1] = stack[stack_top] ^ stack[stack_top-1];
 			free(stack[stack_top]);
 			stack_top--;
 			break;
 		default:
-			assert(*op - 'A' < gate->n_inputs); 
-			uint64_t *val = children[*op - 'A']->value;
+			val = children[*op - 'A']->value;
 			stack[++stack_top] = minterm_new();
 			minterm_cpy(stack[stack_top], val);
 			break;
@@ -44,7 +43,7 @@ Expression *expr_new(Gate *gate, Expression **children, uint64_t *goal) {
 	e->value = stack[stack_top];
 
 	e->cost = 0;
-	for(int i = 0; i < gate->n_inputs; i++) {
+	for(size_t i = 0; i < gate->n_inputs; i++) {
 		e->cost += children[i]->cost;
 	}
 	e->cost++;
