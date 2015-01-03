@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
 	Expression *d = expr_new_from_input(3,num_inputs,goal);
 	minterm_print(d->value);
 	Expression *children[2] = {a,b};
-	Expression *aANDb = expr_new(gates[2],children, goal);
+	Expression *aANDb = expr_new_from_expr(gates[2],children, goal);
 	minterm_print(aANDb->value); 
 	//cleanup
 	expr_free(a);

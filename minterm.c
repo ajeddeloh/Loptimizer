@@ -23,7 +23,7 @@ static uint64_t mask_lookup[] ={0x0000000000000000,
 static uint64_t eq_mask;
 
 //requires __builtin_popcountll be defined, should work on clang/gcc
-int get_hamming_dist(uint64_t *a, uint64_t *b) {
+int get_hamming_dist(const uint64_t *a, const uint64_t *b) {
 	if(n_chunks > 1) {
 		size_t count = 0;
 		for(size_t i = 0; i < n_chunks; i++) {
@@ -35,7 +35,7 @@ int get_hamming_dist(uint64_t *a, uint64_t *b) {
 	}	
 }
 
-void minterm_print(uint64_t *m) {
+void minterm_print(const uint64_t *m) {
 	if(n_bits < sizeof(uint64_t)*8) {
 		uint64_t shifted = *m << ((sizeof(uint64_t)*8)-n_bits);
 		chunk_print(shifted, (sizeof(uint64_t)*8)-n_bits);
@@ -105,7 +105,7 @@ static uint64_t chunk_do_operation(uint64_t a, uint64_t b, char op) {
 	}
 }
 
-void minterm_cpy(uint64_t *dst, uint64_t *src) {
+void minterm_cpy(uint64_t *dst, const uint64_t *src) {
 	memcpy(dst, src, n_chunks * sizeof(uint64_t));
 }
 

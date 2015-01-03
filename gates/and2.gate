@@ -6,3 +6,5 @@ AND2
 4
 #operation (A being inp1, B being 2, etc)
 AB*
+#optimzation flags (todo)
+associative
