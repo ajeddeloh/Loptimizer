@@ -1,7 +1,8 @@
 CC = clang
-CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 -Werror
+INCLUDE = -I./Octothorpe/include/
+CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 -Werror $(INCLUDE)
 
-objects = gate.o expression.o minterm.o heap.o
+objects = gate.o expression.o minterm.o heap.o Octothorpe/libocto.a
 
 all : optimizer
 

@@ -10,6 +10,8 @@
 #include <string.h>
 #include <glob.h>
 
+#include "octo/loa.h"
+
 #include "expression.h"
 #include "minterm.h"
 #include "gate.h"
