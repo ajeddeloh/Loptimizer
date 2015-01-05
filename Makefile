@@ -1,19 +1,31 @@
 CC = clang
-INCLUDE = -I./Octothorpe/include/
+SRC_DIR = src
+
+OCTO_DIR = $(SRC_DIR)/Octothorpe
+INCLUDE = -I$(OCTO_DIR)/include/ 
 CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 -Werror $(INCLUDE)
 
-objects = gate.o expression.o minterm.o heap.o Octothorpe/libocto.a
+OBJECTS = gate.o expression.o minterm.o heap.o $(OCTO_DIR)/libocto.a
 
+.PHONY : all
 all : optimizer
 
-optimizer : $(objects) opt7400.c
-	$(CC) $(CFLAGS) -o optimizer opt7400.c $(objects)
+optimizer : $(OBJECTS) $(SRC_DIR)/opt7400.c
+	$(CC) $(CFLAGS) -o optimizer $(SRC_DIR)/opt7400.c $(OBJECTS)
 
-minterm.o : minterm.h
-gate.o : minterm.h gate.h
-expression.o : gate.h minterm.h expression.h
-heap.o : heap.h
+$(OCTO_DIR)/libocto.a : 
+	make -C $(OCTO_DIR) libocto.a
+
+minterm.o : $(SRC_DIR)/minterm.h
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/minterm.c
+gate.o : $(SRC_DIR)/minterm.h $(SRC_DIR)/gate.h
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/gate.c
+expression.o : $(SRC_DIR)/gate.h $(SRC_DIR)/minterm.h $(SRC_DIR)/expression.h
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/expression.c
+heap.o : $(SRC_DIR)/heap.h
+	$(CC) $(CFLAGS) -c $(SRC_DIR)/heap.c
 
 .PHONY : clean
 clean:
-	rm optimizer $(objects)
+	rm -f optimizer $(OBJECTS)
+	make -C $(OCTO_DIR) clean

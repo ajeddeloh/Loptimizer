@@ -1,0 +1,3 @@
+[submodule "src/Octothorpe"]
+	path = src/Octothorpe
+	url = git@github.com:ajeddeloh/Octothorpe.git
