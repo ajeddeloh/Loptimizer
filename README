@@ -16,11 +16,13 @@ of sums (PoS) configurations but not for situations where:
 Project Layout and Algorithm:
 todo: type this
 
-Dependencies:
+Platforms:
 -Mac(untested) or Linux
 -Shouldn't be too hard to get it to work on windows
 -Should work on 32 bit but this is also untested
--No other dependencies
+
+Dependencies:
+-Octothorpe (included as git submodule)
 
 Bugs: 
--None known (other than things that aren't done)
+-Probably lots
