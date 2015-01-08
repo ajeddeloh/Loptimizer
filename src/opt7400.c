@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
 		//exit cond
 		if(min->hamm_dist == 0) {
 			printf("Found it\n");
+			expr_print_soln(min, 0);
 			break;
 		}
 		//add to closed set
@@ -111,10 +112,14 @@ int main(int argc, char *argv[]) {
 					children[j] = closed_set[idxs[j]];
 				}
 				//figure out what to add next
-				idxs[1] ++;
-				for(int j = 1; j < gate_inputs-1 && idxs[j] == (int)closed_set_n_elems; j++) {
-					idxs[j] = 0;
-					idxs[j+1]++;
+				if(gate_inputs > 1) {
+					idxs[1] ++;
+					for(int j = 1; j < gate_inputs-1 && idxs[j] == (int)closed_set_n_elems; j++) {
+						idxs[j] = 0;
+						idxs[j+1]++;
+					}
+				} else {
+					idxs[0] ++;
 				}
 				
 				//create new expression to add
@@ -153,8 +158,6 @@ int main(int argc, char *argv[]) {
 		} 
 
 	}
-	
-	
 
 	for(int i = 0; i < n_gates; i++) {
 		gate_free(gates[i]);

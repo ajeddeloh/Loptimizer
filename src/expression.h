@@ -22,4 +22,6 @@ void expr_free(Expression *e);
 
 int expr_get_est_cost(Expression *e);
 
+void expr_print_soln(Expression *e, int name);
+
 #endif

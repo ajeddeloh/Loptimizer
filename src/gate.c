@@ -12,6 +12,9 @@
 static bool validate_operation(const char *operation, size_t n_inputs);
 
 static bool validate_operation(const char *operation, size_t n_inputs) {
+	if(operation == NULL && n_inputs == 0) {
+		return true; //input gate
+	}
 	int stack_size = 0;
 	while(*operation != '\0') {
 		switch(*operation) {
@@ -40,7 +43,9 @@ static bool validate_operation(const char *operation, size_t n_inputs) {
 Gate *gate_new (const char* name, int n_inputs, const char *operation, size_t n_gates) {
 	Gate *gate = malloc( sizeof(Gate) );
 	gate->n_inputs = n_inputs;
-	gate->operation = strdup(operation);
+	if( operation != NULL) {
+		gate->operation = strdup(operation);
+	}
 	gate->name = strdup(name);
 	gate->n_gates = n_gates;
 	return gate;

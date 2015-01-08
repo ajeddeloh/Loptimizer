@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 #include <string.h>
 #include <stdint.h>
@@ -55,7 +56,9 @@ Expression *expr_new_from_expr(const Gate *gate, const uint64_t *goal, Expressio
 
 Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) {
 	Expression *e = malloc(sizeof(Expression));
-	e->gate = NULL;
+	char gatestr[] = "A";
+	gatestr[0]+=input_idx;
+	e->gate = gate_new(gatestr, 0, NULL, 0);
 	e->children = NULL;
 	e->cost = 0;
 	e->value = minterm_new();
@@ -78,4 +81,16 @@ void expr_free(Expression *e) {
 
 int expr_get_est_cost(Expression *e) {
 	return e->cost;
+}
+
+void expr_print_soln(Expression *e, int name) {
+	for(int i = 0; i < (int)e->gate->n_inputs; i++) {
+		expr_print_soln(e->children[i], name + i + 1);
+	}
+	printf("%d <= %s ( ", name, e->gate->name);
+	for(int i = 0; i < (int)e->gate->n_inputs; i++) {
+		printf( "%d, ", name + i + 1);
+	}
+	
+	printf(")\n");
 }
