@@ -37,6 +37,10 @@ void heap_insert(Heap *heap, void *data) {
 	}
 }
 
+inline static int get_idx_val(Heap *heap, size_t idx) {
+	return (*heap->get_value)(heap->data[idx]);
+}
+
 void *heap_remove_min(Heap *heap) {
 	void *value = heap->data[0];
 	heap->n_elems--;
@@ -50,15 +54,15 @@ void *heap_remove_min(Heap *heap) {
 		size_t swap;
 		if(get_rchild(idx) >= heap->n_elems) {
 			//check if lchild should be swapped.
-			if( (*heap->get_value)(array[idx]) > (*heap->get_value)(array[get_rchild(idx)])) {
+			if( get_idx_val(heap,idx) > get_idx_val(heap,get_rchild(idx)) ) {
 				swap = get_rchild(idx);
 			} else {
 				break; //done;
 			}
 		} else {
-			swap = (*heap->get_value)(array[get_rchild(idx)]) < (*heap->get_value)(array[get_lchild(idx)]) ? 
+			swap = get_idx_val(heap,get_rchild(idx)) < get_idx_val(heap,get_lchild(idx)) ? 
 				get_rchild(idx) : get_lchild(idx);
-			if( (*heap->get_value)(array[idx]) > (*heap->get_value)(array[swap]))  break;
+			if( get_idx_val(heap,idx) <= get_idx_val(heap,swap))  break;
 		}
 		void *tmp = array[idx];
 		array[idx] = array[swap];

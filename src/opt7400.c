@@ -130,9 +130,6 @@ int main(int argc, char *argv[]) {
 					continue;
 				}
 				if(openset_test != NOT_FOUND)  {
-					printf("oldc: %d, newc: %d\n", (*openset_test)->cost, to_add->cost);
-					minterm_print((*openset_test)->value);
-					minterm_print(to_add->value);
 					free((*openset_test)->children);
 					(*openset_test)->children = children;
 					to_add->children = NULL; //so they can be freed
