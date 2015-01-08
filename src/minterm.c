@@ -13,7 +13,6 @@ static void chunk_print(uint64_t a, size_t start_at);
 
 static uint64_t mask_lookup[] ={0x0000000000000000,
 				0x0000000000000003,
-				0x0000000000000007,
 				0x000000000000000F,
 				0x00000000000000FF,
 				0x000000000000FFFF,
@@ -31,7 +30,7 @@ int get_hamming_dist(const uint64_t *a, const uint64_t *b) {
 		}
 		return count;
 	} else {
-		return __builtin_popcountll(eq_mask & (*a^*b));
+		return __builtin_popcountll(eq_mask & (a[0]^b[0]));
 	}	
 }
 
@@ -109,3 +108,6 @@ void minterm_cpy(uint64_t *dst, const uint64_t *src) {
 	memcpy(dst, src, n_chunks * sizeof(uint64_t));
 }
 
+size_t minterm_get_size() {
+	return sizeof(uint64_t) * n_chunks;
+}

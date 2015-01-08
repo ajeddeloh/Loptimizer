@@ -3,7 +3,7 @@ SRC_DIR = src
 
 OCTO_DIR = $(SRC_DIR)/Octothorpe
 INCLUDE = -I$(OCTO_DIR)/include/ 
-CFLAGS = -ggdb -Wall -Wextra -pedantic -std=c99 -Werror $(INCLUDE)
+CFLAGS = -ggdb -Wall -Wextra -Werror -pedantic -std=c99 $(INCLUDE) -march=native -mtune=native
 
 OBJECTS = gate.o expression.o minterm.o heap.o $(OCTO_DIR)/libocto.a
 

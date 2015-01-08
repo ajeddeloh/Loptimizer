@@ -42,22 +42,29 @@ void *heap_remove_min(Heap *heap) {
 	heap->n_elems--;
 	heap->data[0] = heap->data[heap->n_elems];
 	
-	//todo fix this
 	size_t idx = 0;
 	void **array = heap->data;
 	while(idx <= heap->n_elems) {
-		void* p = array[idx];
-		void* l = array[get_lchild(idx)];
-		void* r = array[get_rchild(idx)];
-		if(p <= l && p <= r) break;
-		size_t smaller = (*heap->get_value)(r) < (*heap->get_value)(l) ? get_rchild(idx) : get_lchild(idx);
-		if(smaller >= heap->n_elems) break;
+		//exit it we're a leaf already
+		if(get_lchild(idx) >= heap->n_elems) break;
+		size_t swap;
+		if(get_rchild(idx) >= heap->n_elems) {
+			//check if lchild should be swapped.
+			if( (*heap->get_value)(array[idx]) > (*heap->get_value)(array[get_rchild(idx)])) {
+				swap = get_rchild(idx);
+			} else {
+				break; //done;
+			}
+		} else {
+			swap = (*heap->get_value)(array[get_rchild(idx)]) < (*heap->get_value)(array[get_lchild(idx)]) ? 
+				get_rchild(idx) : get_lchild(idx);
+			if( (*heap->get_value)(array[idx]) > (*heap->get_value)(array[swap]))  break;
+		}
 		void *tmp = array[idx];
-		array[idx] = array[smaller];
-		array[smaller] = tmp;
-		idx = smaller;
+		array[idx] = array[swap];
+		array[swap] = tmp;
+		idx = swap;
 	}
-	//sift down
 	return value;
 }
 

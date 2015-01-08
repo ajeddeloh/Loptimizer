@@ -71,10 +71,11 @@ Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) 
 }
 
 void expr_free(Expression *e) {
+	free(e->children);
 	free(e->value);
 	free(e);
 }
 
 int expr_get_est_cost(Expression *e) {
-	return e->cost*10 + e->hamm_dist;
+	return e->cost;
 }

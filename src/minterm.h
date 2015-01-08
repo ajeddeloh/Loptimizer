@@ -26,4 +26,6 @@ void minterm_do_operation(uint64_t *res, uint64_t *a, uint64_t *b, char op);
 
 void minterm_cpy(uint64_t *dst, const uint64_t *src); 
 
+size_t minterm_get_size();
+
 #endif 
