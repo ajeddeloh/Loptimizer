@@ -22,7 +22,7 @@ Platforms:
 -Should work on 32 bit but this is also untested
 
 Dependencies:
--Octothorpe (included as git submodule)
+-Octothorpe (included as git submodule, you'll want to clone with --recursive)
 
 Bugs: 
 -Probably lots
