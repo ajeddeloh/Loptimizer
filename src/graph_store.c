@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -100,8 +101,8 @@ Expression *graph_store_get_expr(GraphStore *gs, uint64_t *key) {
 
 Expression *graph_store_remove_min(GraphStore *gs) {
 	Expression *min = gs->heap[0];
-	gs->heap[0] = gs->heap[--(gs->heap_n_elems)];
-	//sift down updating indexes as we go
+	gs->heap[0] = gs->heap[gs->heap_n_elems - 1];
+	gs->heap_n_elems--;
 	heap_sift_down(gs, 0);
 	return min;
 }
@@ -111,11 +112,12 @@ void graph_store_insert_open(GraphStore *gs, Expression *item) {
 	GSValue to_insert = {.expr=item, .heap_idx=gs->heap_n_elems};
 	octo_loa_insert(item->value, &to_insert, gs->ht);
 	gs->ht_n_elems++;
-	heap_sift_up(gs, gs->heap_n_elems++);
+	heap_sift_up(gs, gs->heap_n_elems);
+	gs->heap_n_elems++;
 
-	if( gs->heap_n_elems == gs->heap_cap) {
+	if( gs->heap_n_elems+1 >= gs->heap_cap) {
 		gs->heap_cap *= 2;
-		gs->heap = realloc(gs->heap, gs->heap_cap);
+		gs->heap = realloc(gs->heap, gs->heap_cap * sizeof(Expression*));
 		assert(gs->heap != NULL);
 	}
 
@@ -139,5 +141,12 @@ void graph_store_update_priority(GraphStore *gs, Expression *item) {
 	size_t idx = ((GSValue*)(octo_loa_fetch(item->value, gs->ht)))->heap_idx;
 	heap_sift_up(gs, idx);
 } 
-	
+
+void graph_store_free(GraphStore *gs) {
+	free(gs->heap);
+	free(gs->closed_set);
+	free(gs->ht_key);
+	octo_loa_free(gs->ht);
+	free(gs);
+}	
 	

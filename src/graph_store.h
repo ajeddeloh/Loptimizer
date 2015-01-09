@@ -28,4 +28,4 @@ void graph_store_insert_closed(GraphStore *gs, Expression *item);
 
 void graph_store_update_priority(GraphStore *gs, Expression *item);
 
-
+void graph_store_free(GraphStore *gs);
