@@ -5,25 +5,31 @@ OCTO_DIR = $(SRC_DIR)/Octothorpe
 INCLUDE = -I$(OCTO_DIR)/include/ 
 CFLAGS = -ggdb -Wall -Wextra -Werror -pedantic -std=c99 $(INCLUDE) -march=native -mtune=native 
 
-OBJECTS = gate.o expression.o minterm.o graph_store.o $(OCTO_DIR)/libocto.a
+HEADERS = $(wildcard $(SRC_DIR)/*.h)
+OBJECTS = $(HEADERS:.h=.o) $(OCTO_DIR)/libocto.a
+
 
 .PHONY : all
 all : optimizer
 
 optimizer : $(OBJECTS) $(SRC_DIR)/opt7400.c
+	echo $(HEADERS)
+	echo $(OBJECTS)
 	$(CC) $(CFLAGS) -o optimizer $(SRC_DIR)/opt7400.c $(OBJECTS)
 
 $(OCTO_DIR)/libocto.a : 
 	make -C $(OCTO_DIR) libocto.a
 
-minterm.o : $(SRC_DIR)/minterm.h $(SRC_DIR)/minterm.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/minterm.c
-gate.o : $(SRC_DIR)/minterm.h $(SRC_DIR)/gate.h $(SRC_DIR)/gate.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/gate.c
-expression.o : $(SRC_DIR)/gate.h $(SRC_DIR)/minterm.h $(SRC_DIR)/expression.h $(SRC_DIR)/expression.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/expression.c
-graph_store.o : $(SRC_DIR)/graph_store.h $(SRC_DIR)/expression.h $(SRC_DIR)/minterm.h $(SRC_DIR)/graph_store.c
-	$(CC) $(CFLAGS) -c $(SRC_DIR)/graph_store.c
+.o: $(HEADERS)
+	$(CC) $(CFLAGS) -c $<
+#minterm.o : $(HEADERS) $(SRC_DIR)/minterm.c
+#	$(CC) $(CFLAGS) -c $(SRC_DIR)/minterm.c
+#gate.o : $(HEADERS) $(SRC_DIR)/gate.c
+#	$(CC) $(CFLAGS) -c $(SRC_DIR)/gate.c
+#expression.o : $(HEADERS) $(SRC_DIR)/expression.c
+#	$(CC) $(CFLAGS) -c $(SRC_DIR)/expression.c
+#graph_store.o : $(HEADERS) $(SRC_DIR)/graph_store.c
+#	$(CC) $(CFLAGS) -c $(SRC_DIR)/graph_store.c
 
 .PHONY : clean
 clean:
