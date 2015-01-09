@@ -19,6 +19,7 @@ typedef struct GSValue {
 static void heap_swap(GraphStore *gs, size_t idx1, size_t idx2);
 static void heap_sift_up(GraphStore *gs, size_t elem_idx);
 static void heap_sift_down(GraphStore *gs, size_t elem_idx);
+//static void print_heap(GraphStore *gs); //for debugging
 
 static void heap_swap(GraphStore *gs, size_t idx1, size_t idx2) {
 	Expression **heap_array = gs->heap;
@@ -52,7 +53,7 @@ static void heap_sift_down(GraphStore *gs, size_t heap_idx) {
 
 		size_t rchild = heap_idx * 2 + 2; 
 		if(rchild >= gs->heap_n_elems) {
-			if( arr[heap_idx] > arr[lchild] ) {
+			if( arr[heap_idx]->cost > arr[lchild]->cost ) {
 				heap_swap(gs, heap_idx, lchild);
 				heap_idx = lchild;
 			} else {
@@ -60,7 +61,7 @@ static void heap_sift_down(GraphStore *gs, size_t heap_idx) {
 			}
 		} else {
 			size_t swp = (arr[lchild]->cost < arr[rchild]->cost) ? lchild : rchild;
-			if( arr[heap_idx] > arr[swp]) {
+			if( arr[heap_idx]->cost > arr[swp]->cost) {
 				heap_swap(gs, heap_idx, swp);
 				heap_idx = swp;
 			} else {
@@ -69,8 +70,14 @@ static void heap_sift_down(GraphStore *gs, size_t heap_idx) {
 		}
 	}
 }
-	
-
+/*
+static void print_heap(GraphStore *gs) {
+	for(size_t i = 0; i < gs->heap_n_elems; i++) {
+		printf("%d ", gs->heap[i]->cost);
+	}
+	printf("\n");
+}
+*/
 GraphStore *graph_store_new(size_t init_size) {
 	GraphStore *gs = malloc(sizeof(GraphStore));
 	gs->heap = malloc(sizeof(Expression*) * init_size);
@@ -115,7 +122,7 @@ void graph_store_insert_open(GraphStore *gs, Expression *item) {
 	heap_sift_up(gs, gs->heap_n_elems);
 	gs->heap_n_elems++;
 
-	if( gs->heap_n_elems+1 >= gs->heap_cap) {
+	if( gs->heap_n_elems >= gs->heap_cap) {
 		gs->heap_cap *= 2;
 		gs->heap = realloc(gs->heap, gs->heap_cap * sizeof(Expression*));
 		assert(gs->heap != NULL);
