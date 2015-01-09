@@ -18,7 +18,6 @@
 #include "expression.h"
 #include "minterm.h"
 #include "gate.h"
-#include "heap.h"
 
 int main(int argc, char *argv[]) {
 	if(argc < 4) {

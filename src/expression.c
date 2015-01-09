@@ -48,7 +48,6 @@ Expression *expr_new_from_expr(const Gate *gate, const uint64_t *goal, Expressio
 		e->cost += children[i]->cost;
 	}
 	e->cost++;
-	
 	e->hamm_dist = get_hamming_dist(e->value, goal);	
 
 	return e;
