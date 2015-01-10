@@ -37,7 +37,6 @@ int main(int argc, char *argv[]) {
 	char *tmp = strtok(argv[2], ",");
 	while(tmp != NULL) {
 		int pos = atoi(tmp);
-		//goal |= 1 << pos;
 		minterm_set_bit(goal, pos);
 		tmp = strtok(NULL, ",");
 	}
@@ -60,30 +59,15 @@ int main(int argc, char *argv[]) {
 	globfree(&globbuf);
 	gates = realloc(gates, sizeof(Gate *) * n_gates);
 
-	
-	/*uint8_t *key = octo_keygen();
-	size_t all_expr_n_elems = 0;
-	size_t all_expr_size = n_inputs*2;
-	Heap *openset_q = heap_new(all_expr_size, (int (*)(void*)) expr_get_est_cost); 
-	octo_dict_loa_t *all_expr_ht = octo_loa_init(minterm_get_size(), sizeof(Expression*), all_expr_size, key);
-	
-	Expression **closed_set = calloc(10, sizeof(Expression*));
-	size_t closed_set_size = 10;
-	size_t closed_set_n_elems = 0;*/
-
 	GraphStore *graph = graph_store_new(n_inputs*2);
 
 	for(int i = 0; i < n_inputs; i++) {
 		Expression *e = expr_new_from_input(i, n_inputs, goal);
-		/*heap_insert(openset_q, e);
-		octo_loa_insert(e->value, &e, all_expr_ht);
-		all_expr_n_elems++;*/
 		graph_store_insert_open(graph, e);
 	}
 	printf("Added initial values\n");
 
 	while(graph->heap_n_elems != 0) {
-		//Expression *min = heap_remove_min(openset_q);
 		Expression *min = graph_store_remove_min(graph);
 	
 		printf("%d ",min->cost);
@@ -96,12 +80,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 		//add to closed set
-		//closed_set[closed_set_n_elems++] = min;
 		graph_store_insert_closed(graph, min);
-		/*if(closed_set_n_elems == closed_set_size) { //resize
-			closed_set_size *= 2;
-			closed_set = realloc(closed_set, sizeof(Expression *) * closed_set_size);
-		}*/
 		for(int i = 0; i < n_gates; i++) {
 			size_t gate_inputs = (size_t) gates[i]->n_inputs;
 			if(graph->closed_set_n_elems < gate_inputs) continue;
@@ -110,7 +89,6 @@ int main(int argc, char *argv[]) {
 			//generate all permutations
 			while(idxs[gate_inputs-1] != graph->closed_set_n_elems) {
 				Expression **children = malloc(sizeof(Expression*) * gate_inputs);
-				//for(int j = 0; j < gate_inputs; j++) printf("%d\n",idxs[j]);
 				//generate this batch's children
 				for(size_t j = 0; j < gate_inputs; j++) {
 					children[j] = graph->closed_set[idxs[j]];
@@ -130,10 +108,6 @@ int main(int argc, char *argv[]) {
 				Expression *to_add = expr_new_from_expr(gates[i], goal, children);
 				
 				//check if a better version exists or if we're better than something existing
-				//Expression **openset_test = octo_loa_fetch(to_add->value, all_expr_ht);
-				//if(openset_test == NULL) exit(1);
-				//Expression **NOT_FOUND = (Expression**)all_expr_ht;
-				
 				Expression *openset_test = graph_store_get_expr(graph, to_add->value);
 
 				if(openset_test != NULL && openset_test->cost <= to_add->cost) {	
@@ -151,15 +125,6 @@ int main(int argc, char *argv[]) {
 				}
 				
 				graph_store_insert_open(graph, to_add);
-				/*heap_insert(openset_q, to_add);
-				octo_loa_insert(to_add->value, &to_add, all_expr_ht);
-				all_expr_n_elems++;
-				if(all_expr_n_elems > all_expr_size * 3 / 4) {
-					all_expr_size *= 2;
-					all_expr_ht = octo_loa_rehash(all_expr_ht, minterm_get_size(), sizeof(Expression*),
-							all_expr_size, key);
-				}*/
-					
 			}
 			free(idxs);	
 		} 
