@@ -125,11 +125,11 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	graph_store_free(graph);
 	for(int i = 0; i < n_gates; i++) {
 		gate_free(gates[i]);
 	}
 	free(gates);
 	free(goal);
-	graph_store_free(graph);
 	return EXIT_SUCCESS;
 }

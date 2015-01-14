@@ -73,6 +73,9 @@ Expression *expr_new_from_input(int input_idx, size_t n_inputs, uint64_t *goal) 
 }
 
 void expr_free(Expression *e) {
+	if(e->gate->operation == NULL) { //created with expr_new_from_input
+		gate_free((Gate *)e->gate);
+	}
 	free(e->children);
 	free(e->value);
 	free(e);

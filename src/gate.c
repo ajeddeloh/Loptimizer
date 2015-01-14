@@ -45,6 +45,8 @@ Gate *gate_new (const char* name, int n_inputs, const char *operation, size_t n_
 	gate->n_inputs = n_inputs;
 	if( operation != NULL) {
 		gate->operation = strdup(operation);
+	} else {
+		gate->operation = NULL;
 	}
 	gate->name = strdup(name);
 	gate->n_gates = n_gates;

@@ -152,6 +152,12 @@ void graph_store_update_priority(GraphStore *gs, Expression *item) {
 void graph_store_free(GraphStore *gs) {
 	free(gs->heap);
 	free(gs->closed_set);
+	for(size_t i = 0; i < gs->ht->bucket_count; i++) {
+		if( *((uint8_t *)gs->ht->buckets + (i*(gs->ht->cellen + 1)) ) == 0xff) {
+			GSValue* tmp = (GSValue *)( (uint8_t *)gs->ht->buckets + (i*(gs->ht->cellen+1)) + 1 + gs->ht->keylen );
+			expr_free(tmp->expr);
+		}
+	}
 	free(gs->ht_key);
 	octo_loa_free(gs->ht);
 	free(gs);
