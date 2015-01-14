@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 SRC_DIR = src
 
 OCTO_DIR = $(SRC_DIR)/Octothorpe

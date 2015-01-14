@@ -82,27 +82,22 @@ int main(int argc, char *argv[]) {
 		//add to closed set
 		graph_store_insert_closed(graph, min);
 		for(int i = 0; i < n_gates; i++) {
-			size_t gate_inputs = (size_t) gates[i]->n_inputs;
-			if(graph->closed_set_n_elems < gate_inputs) continue;
-			size_t *idxs = calloc(gates[i]->n_inputs, sizeof(size_t));
-			idxs[0] = graph->closed_set_n_elems-1;
-			//generate all permutations
-			while(idxs[gate_inputs-1] != graph->closed_set_n_elems) {
-				Expression **children = malloc(sizeof(Expression*) * gate_inputs);
+			Gate *gate = gates[i];
+			if(graph->closed_set_n_elems < gate->n_inputs) continue;
+			
+			//indices of elements of the closed set to generate new open set elems
+			size_t *idxs = NULL;
+			gate_generate_indices(gate, &idxs, graph->closed_set_n_elems);
+
+			while (idxs != NULL) {
+				Expression **children = malloc(sizeof(Expression*) * gate->n_inputs);
 				//generate this batch's children
-				for(size_t j = 0; j < gate_inputs; j++) {
+				for(size_t j = 0; j < gate->n_inputs; j++) {
 					children[j] = graph->closed_set[idxs[j]];
 				}
+			
 				//figure out what to add next
-				if(gate_inputs > 1) {
-					idxs[1] ++;
-					for(size_t j = 1; j < gate_inputs-1 && idxs[j] == graph->closed_set_n_elems; j++) {
-						idxs[j] = 0;
-						idxs[j+1]++;
-					}
-				} else {
-					idxs[0] ++;
-				}
+				gate_generate_indices(gate, &idxs, graph->closed_set_n_elems);
 				
 				//create new expression to add
 				Expression *to_add = expr_new_from_expr(gates[i], goal, children);
@@ -126,7 +121,6 @@ int main(int argc, char *argv[]) {
 				
 				graph_store_insert_open(graph, to_add);
 			}
-			free(idxs);	
 		} 
 
 	}

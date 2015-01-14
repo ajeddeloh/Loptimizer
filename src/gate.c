@@ -121,4 +121,33 @@ Gate *gate_parse(char *path) {
 	fclose(fp);
 	return g;
 }
-			
+
+//pass NULL for g to get next val, will set indices to NULL and free the indices at the last
+//index
+//only works with associative gates for now
+void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
+	size_t newidx = closed_set_size-1;
+	if(*indices == NULL) {
+		*indices = calloc(g->n_inputs, sizeof(size_t));
+		(*indices)[0] = newidx;
+		return;
+	}
+	if(g->n_inputs == 1) {
+		free(*indices);
+		*indices = NULL;
+		return;
+	}
+	(*indices)[1] ++;
+	for(size_t i = 1; i < g->n_inputs && (*indices)[i] == closed_set_size; i++) {
+		if(i == g->n_inputs - 1) {
+			free(*indices);
+			*indices = NULL;
+			return;
+		}
+		(*indices)[i] = 0;
+		(*indices)[i+1]++;
+	}
+}
+
+
+
