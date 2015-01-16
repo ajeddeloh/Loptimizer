@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "expression.h"
 #include "gate.h"
@@ -85,14 +86,38 @@ int expr_get_est_cost(Expression *e) {
 	return e->cost;
 }
 
-void expr_print_soln(Expression *e, int name) {
-	for(int i = 0; i < (int)e->gate->n_inputs; i++) {
-		expr_print_soln(e->children[i], name + i + 1);
+static void expr_print_get_list(Expression *e, Expression ***to_print, int *n_to_print, int *to_print_cap) {
+	for(int i = 0; i < (*n_to_print); i++) {
+		if((*to_print)[i] == e) return;
 	}
-	printf("%d <= %s ( ", name, e->gate->name);
-	for(int i = 0; i < (int)e->gate->n_inputs; i++) {
-		printf( "%d, ", name + i + 1);
+	(*to_print)[*n_to_print] = e;
+	(*n_to_print)++;
+	if( *n_to_print == *to_print_cap) { //resize if necesary
+		*to_print_cap *= 2;
+		*to_print = realloc((*to_print), *to_print_cap * sizeof(Expression));
 	}
+	for(size_t child = 0; child < e->gate->n_inputs; child++) {
+		expr_print_get_list(e->children[child], to_print, n_to_print, to_print_cap);
+	}
+}
 	
-	printf(")\n");
+void expr_print_soln(Expression *e) {
+	int to_print_cap = 10;
+	int n_to_print = 0;
+	Expression **to_print = malloc(to_print_cap * sizeof(Expression));
+	expr_print_get_list(e, &to_print, &n_to_print, &to_print_cap);
+	for(int i = 0; i < n_to_print; i++) {
+		Expression *tmp = to_print[i];
+		printf("%d <= %s(", i, tmp->gate->name);
+		for(size_t j = 0; j < tmp->gate->n_inputs; j++) {
+			int k;
+			for(k = 0; k < n_to_print; k++) {
+				if(to_print[k] == tmp->children[j]) break;
+			}
+			printf("%d, ", k);
+		}
+		printf(")\n");
+	}
+
+	free(to_print);
 }

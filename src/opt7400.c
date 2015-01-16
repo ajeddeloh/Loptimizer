@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 		//exit cond
 		if(min->hamm_dist == 0) {
 			printf("Found it\n");
-			expr_print_soln(min, 0);
+			expr_print_soln(min);
 			break;
 		}
 		//add to closed set
