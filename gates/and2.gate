@@ -1,9 +1,5 @@
-#name
-AND2
-#inputs
-2
-#number per IC
-4
-#operation (A being inp1, B being 2, etc)
-AB*
-#optimzation flags (todo)
+name = AND2
+inputs = 2
+gatesperic = 4
+operation = AB*
+flags = symmetric,repeatable

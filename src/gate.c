@@ -70,58 +70,85 @@ Gate *gate_parse(char *path) {
 	if(fp == NULL) {
 		perror(path);
 		return NULL;
-	}	
+	}
 	char *line = NULL;
 	size_t n = 0;
-	size_t n_inputs = 0;
-	size_t n_gates = 0;
-	char *name = NULL;
-	char *operation = NULL;
-	bool error = false;
+	Gate *gate = calloc(1, sizeof(Gate));
+
 	while( getline(&line, &n, fp) != -1) {
 		*strchr(line, '\n') = '\0'; //replace newline with null terminator
 		if( line[0] == '#' || strlen(line) == 0 ) {
 			continue;
 		}
-		if(name == NULL) {
-			name = strdup(line);
-		} else if(n_inputs == 0) {
-			int n = atol(line);
-			if(n == 0) {
-				error = true;
-				break;
+		char *key = strtok(line, " =");
+		char *value = strtok(NULL, " =");
+		
+		if( strcmp(key, "name") == 0) {
+			gate->name = strdup(value);
+		} else if( strcmp(key, "inputs") == 0) {
+			gate->n_inputs = atol(value);
+		} else if( strcmp(key, "gatesperic") == 0) {
+			gate->n_gates = atol(value);
+		} else if( strcmp(key, "operation") == 0) {
+			gate->operation = strdup(value);
+		} else if( strcmp(key, "flags") == 0) {
+			char *flag = strtok(value, ", ");
+			while(flag != NULL) {
+				if( strcmp(flag, "symmetric") == 0) {
+					gate->symmetric = true;
+				} else if( strcmp(flag, "repeatable") == 0) {
+					gate->repeatable = true;
+				} else {
+					printf("Error parsing %s: unknown flag %s, ignoring flag\n", path, flag);
+				}
+				flag = strtok(NULL, " ,");
 			}
-			n_inputs = n;
-		} else if(n_gates == 0) {
-			int n = atol(line);
-			if(n == 0) {
-				error = true;
-				break;
-			}
-			n_gates = n;
-		} else if (operation == NULL) {
-			if(!validate_operation(line, n_inputs)) {
-				error = true;
-				break;
-			}
-			operation = strdup(line);
-		} else { //error
-		}	
+		} else {
+			printf("Error parsing %s: unknown key %s, ignoring key\n", path, value);
+		}			
 	}
-	if(error) {
-		printf("Invalid format in %s\n",path);
-		free(line);
-		free(name);
-		free(operation);
-		fclose(fp);
+	free(line);
+	fclose(fp);
+	
+	//check for correctness	
+
+	//was name specified?
+	if(gate->name == NULL) {
+		printf("Gate name not specified for %s. This gate will be ignored\n", path);
+		gate_free(gate);
 		return NULL;
 	}
-	Gate *g = gate_new(name, n_inputs, operation, n_gates);
-	free(name);
-	free(line);
-	free(operation);
-	fclose(fp);
-	return g;
+
+	//was number of inputs specified and valid?
+	if( gate->n_inputs == 0) {
+		printf("Unspecified or invalid number of inputs for %s. This gate will be ignored\n", path);
+		gate_free(gate);
+		return NULL;
+	}
+
+	//was the number of gates per ic specified?
+	if( gate->n_gates == 0) {
+		printf("Unspecified or invalid number of gates per ic for %s. This gate will be ignored\n", path);
+		gate_free(gate);
+		return NULL;
+	}
+
+	//was the operation specified?
+	if( gate->operation == NULL) {
+		printf("Unspecified operation for %s. This gate will be ignored\n", path);
+		gate_free(gate);
+		return NULL;
+	}
+
+	//was the operation specified valid postfix?
+	if( !validate_operation(gate->operation, gate->n_inputs) ) {
+		printf("Invalid operation for %s. This gate will be ignore\n", path);
+		gate_free(gate);
+		return NULL;
+	}
+	
+	//everything passed its checks, we're all good!
+	return gate;
 }
 
 //pass NULL for g to get next val, will set indices to NULL and free the indices at the last

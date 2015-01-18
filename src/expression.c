@@ -108,7 +108,7 @@ void expr_print_soln(Expression *e) {
 	expr_print_get_list(e, &to_print, &n_to_print, &to_print_cap);
 	for(int i = 0; i < n_to_print; i++) {
 		Expression *tmp = to_print[i];
-		printf("%d <= %s(", i, tmp->gate->name);
+		printf("HD:%d, %d <= %s(", tmp->hamm_dist, i, tmp->gate->name);
 		for(size_t j = 0; j < tmp->gate->n_inputs; j++) {
 			int k;
 			for(k = 0; k < n_to_print; k++) {

@@ -1,8 +1,4 @@
-#name
-INV
-#inputs
-1
-#number per IC
-6
-#opertion
-A!
+name = INV
+inputs = 1
+gatesperic = 6
+operation = A!

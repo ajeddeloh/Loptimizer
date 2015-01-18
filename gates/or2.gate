@@ -1,8 +1,5 @@
-#name
-OR2
-#inputs
-2
-#number per IC
-4
-#opertion
-AB+
+name = OR2
+inputs = 2
+gatesperic = 4
+operation = AB+
+flags = symmetric,repeatable

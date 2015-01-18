@@ -1,6 +1,8 @@
 #ifndef GATE_H
 #define GATE_H
 
+#include <stdbool.h>
+
 #include "minterm.h"
 
 typedef struct Gate {
@@ -8,6 +10,8 @@ typedef struct Gate {
 	size_t n_inputs;
 	size_t n_gates;
 	char *operation; //in postfix
+	bool symmetric;
+	bool repeatable;
 } Gate;
 
 Gate *gate_parse(char *path);
