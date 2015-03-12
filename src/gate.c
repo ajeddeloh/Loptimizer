@@ -175,31 +175,55 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
         *indices = NULL;
         return;
     }
-
-    size_t i = (pos == 0) ? 1 : 0;
-    idxs[i] ++; //inc the init idx (not pos)
-
-    //check for overflows
-    while (i < g->n_inputs) {
-        //elems before pos cant inc the new elem
-        size_t limit = (i < pos) ? old_set_size : closed_set_size;
-        if (idxs[i] != limit) break;
-        idxs[i] = 0;
-        size_t next = (i+1 == pos) ? i+2 : i+1; //skip pos
-        if (next == g->n_inputs) { //all possibilities exhausted for this positition
-            pos++;
-            if( pos == g->n_inputs) { //no more combos
-                *indices = NULL; //indicate we're done
-                break;
+    //optimization specific below
+    switch (g->optimization) {
+        case GATE_OPT_SYM: {
+            size_t i = g->n_inputs - 1;
+            idxs[i] ++; //inc the init idx
+            //deal with overflows
+            while(true) {
+                if (idxs[i] != closed_set_size) return;
+                if (i == 1) {
+                    *indices = NULL;
+                    return;
+                }
+                idxs[i-1] ++;
+                idxs[i] = idxs[i-1];
             }
-            memset(idxs, 0, g->n_inputs * sizeof(size_t));
-            idxs[pos] = old_set_size; //idx of new elem
             break;
         }
-        i = next;
-        idxs[next]++;
+        default: {
+            size_t i = (pos == 0) ? 1 : 0;
+            idxs[i] ++; //inc the init idx (not pos)
+
+            //check for overflows
+            while (true) {
+                //elems before pos cant inc the new elem
+                size_t limit = (i < pos) ? old_set_size : closed_set_size;
+                if (idxs[i] != limit) return;
+                idxs[i] = 0;
+                size_t next = (i+1 == pos) ? i+2 : i+1; //skip pos
+                if (next == g->n_inputs) { //all possibilities exhausted for this positition
+                    pos++;
+                    if( pos == g->n_inputs) {
+                        *indices = NULL;
+                        return;
+                    }
+
+                    memset(idxs, 0, g->n_inputs * sizeof(size_t));
+                    idxs[pos] = old_set_size; //idx of new elem
+                    return;
+                }
+                i = next;
+                idxs[next]++;
+            }
+            break;
+        }
+//        case GATE_OPT_REP: {
+            //code here
+//        }
     }
+    printf("This shouldn't be reached\n");
+    *indices = NULL; 
 }
-
-
 
