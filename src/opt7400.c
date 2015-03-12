@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
 	}
 	printf("Added initial values\n");
 
+    //preform dijkstras
 	while(graph->heap_n_elems != 0) {
 		Expression *min = graph_store_remove_min(graph);
 	
