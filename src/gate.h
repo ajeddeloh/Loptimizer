@@ -1,17 +1,19 @@
 #ifndef GATE_H
 #define GATE_H
 
-#include <stdbool.h>
 
 #include "minterm.h"
+
+#define GATE_OPT_NONE 1
+#define GATE_OPT_SYM  2
+#define GATE_OPT_REP  3
 
 typedef struct Gate {
 	char *name;
 	size_t n_inputs;
 	size_t n_gates;
 	char *operation; //in postfix
-	bool symmetric;
-	bool repeatable;
+    int optimization;
 } Gate;
 
 Gate *gate_parse(char *path);

@@ -2,4 +2,4 @@ name = AND2
 inputs = 2
 gatesperic = 4
 operation = AB*
-flags = symmetric,repeatable
+optimization = repeatable

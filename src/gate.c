@@ -91,20 +91,16 @@ Gate *gate_parse(char *path) {
             gate->n_gates = atol(value);
         } else if( strcmp(key, "operation") == 0) {
             gate->operation = strdup(value);
-        } else if( strcmp(key, "flags") == 0) {
-            char *flag = strtok(value, ", ");
-            while(flag != NULL) {
-                if( strcmp(flag, "symmetric") == 0) {
-                    gate->symmetric = true;
-                } else if( strcmp(flag, "repeatable") == 0) {
-                    gate->repeatable = true;
-                } else {
-                    printf("Error parsing %s: unknown flag %s, ignoring flag\n", path, flag);
-                }
-                flag = strtok(NULL, " ,");
-            }
+        } else if( strcmp(key, "optimization") == 0) {
+            if( strcmp(value, "symmetric") == 0) {
+                gate->optimization = GATE_OPT_SYM;
+            } else if( strcmp(value, "repeatable") == 0) {
+                gate->optimization = GATE_OPT_REP;
+            } else if( strcmp(value, "none" ) == 0) {
+                gate->optimization = GATE_OPT_NONE;
+            } 
         } else {
-            printf("Error parsing %s: unknown key %s, ignoring key\n", path, value);
+            printf("Error parsing %s: unknown key %s, ignoring key\n", path, key);
         }           
     }
     free(line);
@@ -129,6 +125,12 @@ Gate *gate_parse(char *path) {
     //was the number of gates per ic specified?
     if( gate->n_gates == 0) {
         printf("Unspecified or invalid number of gates per ic for %s. This gate will be ignored\n", path);
+        gate_free(gate);
+        return NULL;
+    }
+    
+    if( gate->optimization == 0) {
+        printf("Unspecified or invalid optimization behacvior for %s. This gate will be ignored\n", path);
         gate_free(gate);
         return NULL;
     }
