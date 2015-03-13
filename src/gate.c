@@ -164,7 +164,13 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
     if(*indices == NULL) {
         *indices = calloc(g->n_inputs, sizeof(size_t));
         pos = 0;
-        (*indices)[pos] = closed_set_size-1;
+        if(g->optimization != GATE_OPT_REP) {
+            (*indices)[pos] = closed_set_size-1;
+        } else {
+            for(size_t i = 0; i < g->n_inputs; i++) {
+                (*indices[i] = closed_set_size-1;
+            }
+        }
         return;
     }        
     
@@ -219,9 +225,17 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             }
             break;
         }
-//        case GATE_OPT_REP: {
-            //code here
-//        }
+        case GATE_OPT_REP: {
+            size_t i = 0;
+            idxs[i]--;
+            while(true) {
+                if (idxs[i] + 1 != 0) return;
+                idxs[i+1]--;
+                for(size_t j = i; j >= 0; j--) {
+                    idxs[j] = idxs[j+1] - 1;
+                }
+
+        }
     }
     printf("This shouldn't be reached\n");
     *indices = NULL; 
