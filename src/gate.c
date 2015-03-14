@@ -230,15 +230,12 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             idxs[0]--;
             if(idxs[0] + 1 != 0) return; //if no overflow
             idxs[0] = 0;
-            while(idxs[i+1] == 1 + idxs[i]) { //find the things to be dec'd
+            while((i+1 != g->n_inputs-1) && (idxs[i+1] == 1 + idxs[i])) { //find the things to be dec'd
                 i++;
-                if(i == g->n_inputs - 2) {//no more combos
-                    *indices = NULL;
-                    return;
-                }
             }
+
             i++;
-            if (idxs[i] <= i) { //no more combos
+            if ((i == g->n_inputs) || (idxs[i] <= i)) { //no more combos
                 *indices = NULL;
                 return;
             }

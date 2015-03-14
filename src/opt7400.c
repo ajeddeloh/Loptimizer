@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
 			//indices of elements of the closed set to generate new open set elems
 			size_t *idxs = NULL;
 			gate_generate_indices(gate, &idxs, graph->closed_set_n_elems);
-
+            size_t news = 0, olds = 0;
 			while (idxs != NULL) {
 				Expression **children = malloc(sizeof(Expression*) * gate->n_inputs);
                 
@@ -109,6 +109,7 @@ int main(int argc, char *argv[]) {
 
 				if(openset_test != NULL && openset_test->cost <= to_add->cost) {	
 					expr_free(to_add);
+                    olds++;
 					continue;
 				}
 				if(openset_test != NULL)  {
@@ -118,11 +119,13 @@ int main(int argc, char *argv[]) {
 					openset_test->cost = to_add->cost;
 					expr_free(to_add);
 					graph_store_update_priority(graph, openset_test);
+                    news ++;
 					continue;
 				}
-				
+				news++;
 				graph_store_insert_open(graph, to_add);
 			}
+            //printf("%s, size: %zu, news: %zu, olds: %zu\n", gate->name, graph->closed_set_n_elems, news, olds);
 		} 
 
 	}
