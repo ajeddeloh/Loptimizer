@@ -168,7 +168,7 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             (*indices)[pos] = closed_set_size-1;
         } else {
             for(size_t i = 0; i < g->n_inputs; i++) {
-                (*indices[i] = closed_set_size-1;
+                (*indices)[i] = closed_set_size-1;
             }
         }
         return;
@@ -198,7 +198,7 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             }
             break;
         }
-        default: {
+        case GATE_OPT_NONE: {
             size_t i = (pos == 0) ? 1 : 0;
             idxs[i] ++; //inc the init idx (not pos)
 
@@ -227,14 +227,27 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
         }
         case GATE_OPT_REP: {
             size_t i = 0;
-            idxs[i]--;
-            while(true) {
-                if (idxs[i] + 1 != 0) return;
-                idxs[i+1]--;
-                for(size_t j = i; j >= 0; j--) {
-                    idxs[j] = idxs[j+1] - 1;
+            idxs[0]--;
+            if(idxs[0] + 1 != 0) return; //if no overflow
+            idxs[0] = 0;
+            while(idxs[i+1] == 1 + idxs[i]) { //find the things to be dec'd
+                i++;
+                if(i == g->n_inputs - 2) {//no more combos
+                    *indices = NULL;
+                    return;
                 }
-
+            }
+            i++;
+            if (idxs[i] <= i) { //no more combos
+                *indices = NULL;
+                return;
+            }
+            idxs[i] --;
+            while ( i != 0) {
+                idxs[i-1] = idxs[i] - 1;
+                i--;
+            }
+            return;
         }
     }
     printf("This shouldn't be reached\n");

@@ -92,12 +92,13 @@ int main(int argc, char *argv[]) {
 
 			while (idxs != NULL) {
 				Expression **children = malloc(sizeof(Expression*) * gate->n_inputs);
+                
 				//generate this batch's children
 				for(size_t j = 0; j < gate->n_inputs; j++) {
 					children[j] = graph->closed_set[idxs[j]];
 				}
 			
-				//figure out what to add next
+				//figure out what to add next iteration
 				gate_generate_indices(gate, &idxs, graph->closed_set_n_elems);
 				
 				//create new expression to add
