@@ -9,7 +9,7 @@
 #include "expression.h"
 #include "graph_store.h"
 
-#define REHASH_LOAD 0.75
+#define REHASH_LOAD 0.6
 
 typedef struct GSValue {
 	Expression *expr;
@@ -114,6 +114,7 @@ Expression *graph_store_remove_min(GraphStore *gs) {
 	return min;
 }
 
+
 void graph_store_insert_open(GraphStore *gs, Expression *item) {
 	gs->heap[gs->heap_n_elems] = item;
 	GSValue to_insert = {.expr=item, .heap_idx=gs->heap_n_elems};
@@ -130,6 +131,7 @@ void graph_store_insert_open(GraphStore *gs, Expression *item) {
 
 	if( gs->ht_n_elems > gs->ht_cap * REHASH_LOAD) {
 		gs->ht_cap *= 2;
+        gs->ht_cap --;
 		gs->ht = octo_loa_rehash(gs->ht, minterm_get_size(), sizeof(GSValue), gs->ht_cap, gs->ht_key);
 		assert(gs->ht != NULL);
 	}

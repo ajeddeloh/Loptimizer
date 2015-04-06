@@ -45,8 +45,17 @@ Expression *expr_new_from_expr(const Gate *gate, const uint64_t *goal, Expressio
 	e->value = stack[stack_top];
 
 	e->cost = 0;
+    bool dup = false;
 	for(size_t i = 0; i < gate->n_inputs; i++) {
-		e->cost += children[i]->cost;
+        for(size_t j = 0; j < i; j++) {
+            if(children[i] == children[j]) {
+                dup = true;
+                break;
+            }
+        }
+        if (!dup) {
+    		e->cost += children[i]->cost;
+        }
 	}
 	e->cost++;
 	e->hamm_dist = get_hamming_dist(e->value, goal);	

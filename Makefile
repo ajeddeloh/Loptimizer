@@ -1,9 +1,9 @@
-CC = clang
+CC = gcc
 SRC_DIR = src
 
 OCTO_DIR = $(SRC_DIR)/Octothorpe
 INCLUDE = -I$(OCTO_DIR)/include/ 
-CFLAGS = -ggdb -Wall -Wextra -Werror -pedantic -std=c99 $(INCLUDE) -march=native -mtune=native 
+CFLAGS = -ggdb -pg -Wall -Wextra -Werror -pedantic -std=c99 $(INCLUDE) -march=native -mtune=native -O3 
 
 HEADERS = $(wildcard $(SRC_DIR)/*.h)
 OBJECTS = $(HEADERS:.h=.o) $(OCTO_DIR)/libocto.a

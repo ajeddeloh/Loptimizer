@@ -64,7 +64,12 @@ void gate_free(Gate* gate) {
 //n_inputs
 //n_gates
 //operation string
-//optional special properties (e.g. associative)
+//optimizer setting (esp. important for 3+ input gates): options none, symmetric, repeatable
+//none tries all possible combinations
+//symmetric tries all combination assuming the function is symmetric (e.g. F(a,b,c) = F(c,a,b) or
+//some other rearrangement)
+//repeatable is like symmetric but also assumes if one of the arguments is repeated, it doesn't matter
+//which one. (e.g. F(a,a,b) = F(a,b,b)
 Gate *gate_parse(char *path) {
     FILE *fp = fopen(path, "r");
     if(fp == NULL) {
@@ -177,9 +182,7 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
     size_t *idxs = *indices;
     //special case for inverters
     if(g->n_inputs == 1) {
-        free(*indices);
-        *indices = NULL;
-        return;
+        goto free_and_exit;
     }
     //optimization specific below
     switch (g->optimization) {
@@ -189,9 +192,8 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             //deal with overflows
             while(true) {
                 if (idxs[i] != closed_set_size) return;
-                if (i == 1) {
-                    *indices = NULL;
-                    return;
+                if (i == 1) { 
+                    goto free_and_exit;
                 }
                 idxs[i-1] ++;
                 idxs[i] = idxs[i-1];
@@ -211,10 +213,7 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
                 size_t next = (i+1 == pos) ? i+2 : i+1; //skip pos
                 if (next == g->n_inputs) { //all possibilities exhausted for this positition
                     pos++;
-                    if( pos == g->n_inputs) {
-                        *indices = NULL;
-                        return;
-                    }
+                    if( pos == g->n_inputs) goto free_and_exit;
 
                     memset(idxs, 0, g->n_inputs * sizeof(size_t));
                     idxs[pos] = old_set_size; //idx of new elem
@@ -235,10 +234,7 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             }
 
             i++;
-            if ((i == g->n_inputs) || (idxs[i] <= i)) { //no more combos
-                *indices = NULL;
-                return;
-            }
+            if ((i == g->n_inputs) || (idxs[i] <= i)) goto free_and_exit;
             idxs[i] --;
             while ( i != 0) {
                 idxs[i-1] = idxs[i] - 1;
@@ -247,7 +243,10 @@ void gate_generate_indices(Gate *g, size_t **indices, size_t closed_set_size) {
             return;
         }
     }
-    printf("This shouldn't be reached\n");
-    *indices = NULL; 
+
+free_and_exit:
+    free(*indices);
+    *indices = NULL;
+    return;
 }
 
